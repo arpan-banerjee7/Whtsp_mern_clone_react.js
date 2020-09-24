@@ -1,48 +1,46 @@
-import React, {useEffect, useState} from 'react';
-import Sidebar from './Sidebar';
-import Chat from './Chat';
-import './App.css'
-import Pusher from 'pusher-js'
-import axios from "./axios"
-
+import React, { useEffect, useState } from "react";
+import Sidebar from "./Sidebar";
+import Chat from "./Chat";
+import "./App.css";
+import Pusher from "pusher-js";
+import axios from "./axios";
 
 function App() {
-  const [messages, setMessages] =  useState([]);
+  const [messages, setMessages] = useState([]);
+
+  // useEffect(() => {
+  //   axios.get("/messages/sync").then((response) => {
+  //     setMessages(response.data);
+  //   });
+  // }, []);
 
   useEffect(() => {
-   
-    axios.get('/messages/sync')
-      .then((response)=>{
-        setMessages(response.data);
-      })
-  }, [])
-
-  useEffect(() => {
-    const pusher = new Pusher('213c701d4f851b7e4bed', {
-      cluster: 'us3'
+    var pusher = new Pusher("7be8cd2b6520eb3fad33", {
+      cluster: "ap2",
     });
 
-    const channel = pusher.subscribe('messages');
-    channel.bind('inserted', function(newMessage) {
-      
-      setMessages([...messages,newMessage ]);
+    var channel = pusher.subscribe("messages");
+    channel.bind("inserted", function (data) {
+      alert(JSON.stringify(data));
     });
-    return()=>{
-      channel.unbind_all();
-      channel.unsubscribe();
-    }
-  }, [messages]); 
-    
+    // const channel = pusher.subscribe('messages');
+    // channel.bind('inserted', function(newMessage) {
+
+    //   setMessages([...messages,newMessage ]);
+    // });
+    // return()=>{
+    //   channel.unbind_all();
+    //   channel.unsubscribe();
+    // }
+  }, []);
+
   console.log(messages);
-    return (
+  return (
     <div className="app">
       <div className="app__body">
         <Sidebar />
-        <Chat messages={messages}/>
-          
+        <Chat messages={messages} />
       </div>
-         
-          
     </div>
   );
 }

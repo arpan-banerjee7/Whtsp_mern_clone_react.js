@@ -8,37 +8,37 @@ import cors from "cors";
 //app config
 const app = express();
 const port = process.env.PORT || 9000;
-// const pusher = new Pusher({
-//     appId: '1071060',
-//     key: '213c701d4f851b7e4bed',
-//     secret: '357602364c1eb762eb6b',
-//     cluster: 'us3',
-//     encrypted: true
-//   });
-//   const db= mongoose.connection
+const pusher = new Pusher({
+  appId: "1078911",
+  key: "7be8cd2b6520eb3fad33",
+  secret: "bdef103e6e21f174585e",
+  cluster: "ap2",
+  encrypted: true,
+});
 
-//   db.once('open',()=>{ console.log("db connected")
-//   const msgCollection = db.collection("messagecontents")
-//   const changeStream = msgCollection.watch();
+const db = mongoose.connection;
 
-//   changeStream.on('change', (change)=>{
-//      if(change.operationType ==='insert'){
-//          const messageDetails = change.fullDocument;
-//          pusher.trigger('messages', "inserted",
-//           {
-//             name: messageDetails.name,
-//             message: messageDetails.message,
-//             timestamp: messageDetails.timestamp,
-
-//           }
-//         );
-//      }
-//      else{
-//          console.log('Error triggering Pusher');
-//      }
-//   })
-
-// })
+db.once("open", () => {
+  console.log("db connected");
+  const msgCollection = db.collection("messagecontents");
+  const changeStream = msgCollection.watch();
+  //   changeStream.on("change", (change) => {
+  //     console.log("A change ocured", change);
+  //   });
+  // });
+  changeStream.on("change", (change) => {
+    if (change.operationType === "insert") {
+      const messageDetails = change.fullDocument;
+      pusher.trigger("messages", "inserted", {
+        name: messageDetails.name,
+        message: messageDetails.message,
+        timestamp: messageDetails.timestamp,
+      });
+    } else {
+      console.log("Error triggering Pusher");
+    }
+  });
+});
 
 //middleware
 app.use(express.json());
@@ -48,7 +48,7 @@ app.use(express.json());
 // //     res.setHeader("Access-Control-Allow-Origin","*");
 // //     res.setHeader("Access-Control-Allow-Headers","*");
 // // });
-// app.use(cors())
+app.use(cors());
 
 //db config xFMWcglaQNsAvyRF
 const connectionUrl =

@@ -8,31 +8,31 @@ import axios from "./axios";
 function App() {
   const [messages, setMessages] = useState([]);
 
-  // useEffect(() => {
-  //   axios.get("/messages/sync").then((response) => {
-  //     setMessages(response.data);
-  //   });
-  // }, []);
+  useEffect(() => {
+    axios.get("/messages/sync").then((response) => {
+      setMessages(response.data);
+    });
+  }, []);
 
   useEffect(() => {
     var pusher = new Pusher("7be8cd2b6520eb3fad33", {
       cluster: "ap2",
     });
-
-    var channel = pusher.subscribe("messages");
-    channel.bind("inserted", function (data) {
-      alert(JSON.stringify(data));
-    });
-    // const channel = pusher.subscribe('messages');
-    // channel.bind('inserted', function(newMessage) {
-
-    //   setMessages([...messages,newMessage ]);
+    console.log(messages);
+    // var channel = pusher.subscribe("messages");
+    // channel.bind("inserted", function (data) {
+    //   alert(JSON.stringify(data));
     // });
-    // return()=>{
-    //   channel.unbind_all();
-    //   channel.unsubscribe();
-    // }
-  }, []);
+    const channel = pusher.subscribe("messages");
+    channel.bind("inserted", function (newMessage) {
+      alert(JSON.stringify(newMessage));
+      setMessages([...messages, newMessage]);
+    });
+    return () => {
+      channel.unbind_all();
+      channel.unsubscribe();
+    };
+  }, [messages]);
 
   console.log(messages);
   return (

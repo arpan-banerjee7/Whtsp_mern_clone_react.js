@@ -8,6 +8,8 @@ import cors from "cors";
 //app config
 const app = express();
 const port = process.env.PORT || 9000;
+
+//pusher
 const pusher = new Pusher({
   appId: "1078911",
   key: "7be8cd2b6520eb3fad33",
